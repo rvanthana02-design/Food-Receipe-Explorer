@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tamil Food Explorer | 20+ Recipes</title>
+    <title>Tamil Food Explorer | Filters</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,171 +17,145 @@
         body {
             background: var(--bg);
             font-family: 'Montserrat', 'Noto Sans Tamil', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { color: var(--accent); margin-bottom: 5px; }
-        .header p { font-size: 0.9rem; color: #636e72; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: var(--accent); }
 
-        /* Neumorphic Search Section */
+        /* Filter Buttons Section */
+        .filter-container {
+            display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 10px 20px; border: none; border-radius: 50px;
+            background: var(--bg); cursor: pointer; font-weight: bold;
+            box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+            transition: 0.3s; color: #555;
+        }
+
+        .filter-btn:active, .filter-btn.active {
+            box-shadow: inset 3px 3px 7px var(--shadow-dark), inset -3px -3px 7px var(--shadow-light);
+            color: var(--accent);
+        }
+
         .search-area {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            gap: 10px;
-            margin-bottom: 40px;
+            width: 100%; max-width: 500px; display: flex; gap: 10px; margin-bottom: 30px;
         }
 
         input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 15px;
-            background: var(--bg);
-            box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+            flex: 1; padding: 15px; border: none; border-radius: 15px;
+            background: var(--bg); box-shadow: inset 5px 5px 10px var(--shadow-dark);
             outline: none;
-            font-size: 1rem;
         }
 
-        button {
-            padding: 15px 25px;
-            border: none;
-            border-radius: 15px;
-            background: var(--bg);
-            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
-            cursor: pointer;
-            font-weight: bold;
-            color: #2d3436;
-            transition: 0.3s;
-        }
-
-        button:active { box-shadow: inset 2px 2px 5px var(--shadow-dark); }
-
-        /* Recipe Grid */
         #recipeGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            width: 100%;
-            max-width: 1100px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px; width: 100%; max-width: 1100px;
         }
 
         .card {
-            background: var(--bg);
-            padding: 20px;
-            border-radius: 25px;
-            box-shadow: 12px 12px 24px var(--shadow-dark), -12px -12px 24px var(--shadow-light);
-            transition: 0.3s;
+            background: var(--bg); padding: 20px; border-radius: 25px;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
         }
 
-        .card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-
-        .card h3 { color: var(--accent); margin: 10px 0; }
-        .card .category { font-size: 0.75rem; font-weight: bold; color: #b8860b; text-transform: uppercase; }
-        .card .instr { font-size: 0.85rem; line-height: 1.5; color: #444; margin-top: 10px; }
-        
-        .no-result { grid-column: 1/-1; text-align: center; padding: 50px; color: #999; }
+        .card img { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; }
+        .tag { font-size: 0.7rem; font-weight: bold; background: var(--accent); color: white; padding: 3px 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>🥘 Tamil Food Explorer</h1>
-        <p>20+ Traditional Recipes & Global Search</p>
+        <h1>🥘 Food Explorer</h1>
+    </div>
+
+    <div class="filter-container">
+        <button class="filter-btn" onclick="filterBy('All')">எல்லாம்</button>
+        <button class="filter-btn" onclick="filterBy('Veg')">சைவம் (Veg)</button>
+        <button class="filter-btn" onclick="filterBy('Non-Veg')">அசைவம் (Non-Veg)</button>
+        <button class="filter-btn" onclick="filterBy('Sweet')">இனிப்பு (Sweet)</button>
     </div>
 
     <div class="search-area">
-        <input type="text" id="userInput" placeholder="Search (Biryani, Sambar, Dosa...)">
-        <button onclick="getRecipes()">Search</button>
+        <input type="text" id="userInput" placeholder="உணவு பெயரை தட்டச்சு செய்க...">
+        <button class="filter-btn" onclick="getRecipes()">தேடு</button>
     </div>
 
-    <div id="recipeGrid">
-        </div>
+    <div id="recipeGrid"></div>
 
     <script>
         const recipeGrid = document.getElementById('recipeGrid');
-
-        // 20 Core Tamil Recipes Database
-        const tamilDB = {
-            "biryani": { name: "சிக்கன் பிரியாணி", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1529446352.jpg", desc: "பாசுமதி அரிசியுடன் மசாலாக்கள் மற்றும் கறியை சேர்த்து தம் முறையில் சமைக்கவும்." },
-            "sambar": { name: "முருங்கைக்காய் சாம்பார்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg", desc: "துவரம் பருப்பு, புளி கரைசல் மற்றும் காய்கறிகள் சேர்த்து கொதிக்க விடவும்." },
-            "dosa": { name: "நெய் ரோஸ்ட் தோசை", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/vuyvrt1468255650.jpg", desc: "புளித்த அரிசி மாவை மெல்லியதாக தேய்த்து நெய் ஊற்றி பொன்னிறமாக சுடவும்." },
-            "idli": { name: "மல்லிகைப்பூ இட்லி", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/1529444101.jpg", desc: "அரிசி மற்றும் உளுந்து சேர்த்து அரைத்த மாவை ஆவியில் வேகவைக்கவும்." },
-            "pongal": { name: "வெண் பொங்கல்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg", desc: "பச்சரிசி மற்றும் பாசிப்பருப்பு குழைய வேகவைத்து மிளகு, சீரகம் தாளிக்கவும்." },
-            "fish curry": { name: "மீன் குழம்பு", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1520084413.jpg", desc: "புளி மற்றும் மசாலா சேர்த்த காரசாரமான மீன் குழம்பு." },
-            "rasam": { name: "மிளகு ரசம்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg", desc: "தக்காளி, புளி மற்றும் இடித்த மிளகு, பூண்டு சேர்த்து கொதிக்க விடவும்." },
-            "chicken 65": { name: "சிக்கன் 65", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1529446352.jpg", desc: "மசாலா தடவிய கோழி துண்டுகளை எண்ணெயில் பொரித்து எடுக்கவும்." },
-            "parotta": { name: "வீச்சு புரோட்டா", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/1529444830.jpg", desc: "மைதா மாவை மெல்லிய அடுக்காக தேய்த்து கல்லில் சுடவும்." },
-            "mutton chukka": { name: "ஆட்டுக்கறி சுக்கா", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1529446352.jpg", desc: "வெங்காயம் மற்றும் மசாலாக்களுடன் ஆட்டுக்கறியை வறுத்து எடுக்கவும்." },
-            "vada": { name: "மெது வடை", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/vuyvrt1468255650.jpg", desc: "உளுந்து மாவில் வெங்காயம், மிளகு சேர்த்து எண்ணெயில் பொரிக்கவும்." },
-            "kootu": { name: "அவரைக்காய் கூட்டு", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg", desc: "பருப்பு மற்றும் தேங்காய் அரைத்து ஊற்றி காய்கறிகளுடன் வேகவைக்கவும்." },
-            "poriyal": { name: "பீன்ஸ் பொரியல்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg", desc: "காய்கறிகளை நறுக்கி கடுகு, உளுந்து தாளித்து தேங்காய் துருவல் சேர்க்கவும்." },
-            "payasam": { name: "சேமியா பாயாசம்", cat: "Sweet", img: "https://www.themealdb.com/images/media/meals/1529445136.jpg", desc: "பால் மற்றும் சர்க்கரையுடன் சேமியா, முந்திரி சேர்த்து கொதிக்க விடவும்." },
-            "kesari": { name: "ரவா கேசரி", cat: "Sweet", img: "https://www.themealdb.com/images/media/meals/1529445136.jpg", desc: "ரவையை நெய்யில் வறுத்து சர்க்கரை மற்றும் குங்குமப்பூ சேர்த்து கிளறவும்." },
-            "puli sadam": { name: "புளி சாதம்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg", desc: "புளி காய்ச்சல் தயாரித்து சாதத்துடன் கிளறவும்." },
-            "thayir sadam": { name: "தயிர் சாதம்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg", desc: "குழைந்த சாதத்தில் தயிர், பால் சேர்த்து கடுகு, கறிவேப்பிலை தாளிக்கவும்." },
-            "adai": { name: "அடை தோசை", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/vuyvrt1468255650.jpg", desc: "பலவகை பருப்புகள் சேர்த்து அரைத்த மாவில் செய்த கனமான தோசை." },
-            "kuzhi paniyaram": { name: "குழி பணியாரம்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/vuyvrt1468255650.jpg", desc: "இட்லி மாவில் தாளிப்பு சேர்த்து பணியார கல்லில் சுடவும்." },
-            "curry dosa": { name: "மதுரை கறி தோசை", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1529446352.jpg", desc: "தோசையின் மேல் சிக்கன் அல்லது மட்டன் சுக்கா வைத்து சுடவும்." }
+        
+        // English-to-Tamil Category Mapper
+        const translateCat = (eng) => {
+            const map = {
+                "Chicken": "கோழி வகை", "Beef": "மாட்டுக்கறி", "Dessert": "இனிப்பு வகை",
+                "Vegetarian": "சைவம்", "Seafood": "கடல் உணவு", "Pork": "பன்றி இறைச்சி",
+                "Lamb": "ஆட்டுக்கறி", "Side": "கூட்டு/பொரியல்", "Pasta": "பாஸ்தா"
+            };
+            return map[eng] || "மற்றவை";
         };
 
-        // Initial Load - Show all 20 recipes
-        window.onload = () => {
-            renderList(Object.values(tamilDB), "TAMIL SPECIAL");
-        };
+        const tamilDB = [
+            { name: "சிக்கன் பிரியாணி", cat: "Non-Veg", img: "https://www.themealdb.com/images/media/meals/1529446352.jpg", desc: "காரசாரமான அசல் ஆம்பூர் பிரியாணி." },
+            { name: "முருங்கைக்காய் சாம்பார்", cat: "Veg", img: "https://www.themealdb.com/images/media/meals/wvpsxx1468256321.jpg", desc: "வீட்டு முறையில் செய்த பருப்பு சாம்பார்." },
+            { name: "ரவா கேசரி", cat: "Sweet", img: "https://www.themealdb.com/images/media/meals/1529445136.jpg", desc: "நெய் மணம் கமழும் இனிப்பு கேசரி." }
+            // ... neenga munnadi vachiruntha matha recipes-um inga add pannikalam
+        ];
 
-        function renderList(meals, label) {
+        window.onload = () => renderList(tamilDB);
+
+        // 2. Filter Function
+        function filterBy(category) {
+            if(category === 'All') {
+                renderList(tamilDB);
+            } else {
+                const filtered = tamilDB.filter(item => item.cat === category);
+                renderList(filtered);
+            }
+        }
+
+        function renderList(meals) {
             recipeGrid.innerHTML = "";
             meals.forEach(m => {
-                const name = m.name || m.strMeal;
-                const cat = m.cat || m.strCategory;
-                const img = m.img || m.strMealThumb;
-                const desc = m.desc || (m.strInstructions ? m.strInstructions.substring(0, 100) + "..." : "Easy cooking method.");
-
                 recipeGrid.innerHTML += `
                     <div class="card">
-                        <span class="category">${label} | ${cat}</span>
-                        <img src="${img}" alt="${name}">
-                        <h3>${name}</h3>
-                        <p class="instr">${desc}</p>
-                    </div>
-                `;
+                        <span class="tag">${m.cat}</span>
+                        <img src="${m.img}">
+                        <h3>${m.name}</h3>
+                        <p>${m.desc}</p>
+                    </div>`;
             });
         }
 
+        // 3. API Translation Logic
         async function getRecipes() {
             const query = document.getElementById('userInput').value.toLowerCase().trim();
             if (!query) return;
 
-            // Check Tamil DB
-            if (tamilDB[query]) {
-                renderList([tamilDB[query]], "TAMIL SPECIAL");
-            } else {
-                // Fetch from Global API
-                recipeGrid.innerHTML = "Searching Global API...";
-                try {
-                    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
-                    const data = await res.json();
-                    if (data.meals) {
-                        renderList(data.meals, "GLOBAL API");
-                    } else {
-                        recipeGrid.innerHTML = "<div class='no-result'>No recipes found. Try 'biryani' or 'pasta'.</div>";
-                    }
-                } catch (e) {
-                    recipeGrid.innerHTML = "Error connecting to server.";
+            recipeGrid.innerHTML = "தேடுகிறது...";
+
+            try {
+                const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+                const data = await res.json();
+                
+                recipeGrid.innerHTML = "";
+                if (data.meals) {
+                    data.meals.forEach(meal => {
+                        recipeGrid.innerHTML += `
+                            <div class="card">
+                                <span class="tag">${translateCat(meal.strCategory)}</span>
+                                <img src="${meal.strMealThumb}">
+                                <h3>${meal.strMeal} (ஆங்கிலம்)</h3>
+                                <p>${meal.strInstructions.substring(0, 100)}...</p>
+                            </div>`;
+                    });
+                } else {
+                    recipeGrid.innerHTML = "உணவு கிடைக்கவில்லை!";
                 }
-            }
+            } catch (e) { recipeGrid.innerHTML = "Error!"; }
         }
     </script>
 </body>
