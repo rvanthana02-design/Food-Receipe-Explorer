@@ -1,45 +1,198 @@
-// 1. Namma Tamil Recipe Data (Example)
-const tamilRecipes = {
-    "biryani": {
-        name: "ஆம்பூர் சிக்கன் பிரியாணி",
-        category: "Non-Veg",
-        img: "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8",
-        instructions: "முதலில் அரிசியை ஊறவைக்கவும். பின் ஒரு பாத்திரத்தில் எண்ணெய் ஊற்றி பட்டை, கிராம்பு சேர்க்கவும்...",
-        yt: "https://youtube.com/results?search_query=biryani+recipe+tamil"
-    },
-    "sambar": {
-        name: "கல்யாண வீட்டு சாம்பார்",
-        category: "Veg",
-        img: "https://images.unsplash.com/photo-1601050690597-df056fb467ad",
-        instructions: "பருப்பை வேகவைக்கவும். காய்கறிகளை வதக்கி மசாலா சேர்த்து கொதிக்க விடவும்...",
-        yt: "https://youtube.com/results?search_query=sambar+recipe+tamil"
-    }
-};
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jianna's Recipe Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #e0eafc;
+            --text: #444b6e;
+            --gold: #d4af37;
+            --shadow-light: #ffffff;
+            --shadow-dark: #b8c6db;
+        }
 
-// 2. Search Logic Update
-async function getRecipes(query) {
-    const q = query.toLowerCase();
+        body {
+            background: var(--bg);
+            font-family: 'Montserrat', 'Noto Sans Tamil', sans-serif;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        h1 { color: var(--gold); text-shadow: 1px 1px white; }
+
+        /* Neumorphic Search Bar */
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: inset 6px 6px 12px var(--shadow-dark), 
+                        inset -6px -6px 12px var(--shadow-light);
+            outline: none;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 15px;
+            background: var(--bg);
+            box-shadow: 6px 6px 12px var(--shadow-dark), 
+                        -6px -6px 12px var(--shadow-light);
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--gold);
+            transition: 0.2s;
+        }
+
+        button:active {
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), 
+                        inset -4px -4px 8px var(--shadow-light);
+        }
+
+        /* Recipe Grid */
+        #recipeGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        /* Neumorphic Card */
+        .recipe-card {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 15px 15px 30px var(--shadow-dark), 
+                        -15px -15px 30px var(--shadow-light);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .recipe-card:hover { transform: translateY(-5px); }
+
+        .recipe-card img {
+            width: 100%;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .recipe-card h3 { margin: 10px 0; font-size: 1.2rem; }
+        .recipe-card p { font-size: 0.9rem; opacity: 0.8; line-height: 1.5; }
+        
+        .tag {
+            display: inline-block;
+            padding: 5px 12px;
+            background: var(--gold);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🥘 Recipe Explorer</h1>
     
-    // First, check if we have it in Tamil Data
-    if (tamilRecipes[q]) {
-        displayTamilRecipe(tamilRecipes[q]);
-    } else {
-        // If not in Tamil, fetch from Global API (English)
-        const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${q}`);
-        const data = await res.json();
-        displayRecipes(data.meals);
-    }
-}
+    <div class="search-container">
+        <input type="text" id="userInput" placeholder="Search (e.g. biryani, chicken, cake)">
+        <button onclick="getRecipes()">Search</button>
+    </div>
 
-function displayTamilRecipe(meal) {
-    recipeGrid.innerHTML = `
-        <div class="recipe-card" onclick="showTamilDetails('${meal.name}')">
-            <img src="${meal.img}" alt="${meal.name}">
-            <div class="recipe-content">
-                <span class="recipe-category">${meal.category}</span>
-                <h3 class="recipe-title">${meal.name}</h3>
-                <button>View Recipe (தமிழ்)</button>
-            </div>
+    <div id="recipeGrid">
         </div>
-    `;
-}
+
+    <script>
+        const recipeGrid = document.getElementById('recipeGrid');
+
+        // 1. Namma Tamil Recipe Data
+        const tamilRecipes = {
+            "biryani": { 
+                name: "ஆம்பூர் சிக்கன் பிரியாணி", 
+                category: "Non-Veg", 
+                img: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500",
+                instructions: "முதலில் அரிசியை ஊறவைக்கவும். பின் வெங்காயம், தக்காளி வதக்கி மசாலா சேர்த்து கறியுடன் வேகவைக்கவும்." 
+            },
+            "sambar": { 
+                name: "கல்யாண வீட்டு சாம்பார்", 
+                category: "Veg", 
+                img: "https://images.unsplash.com/photo-1601050690597-df056fb467ad?w=500",
+                instructions: "பருப்பை வேகவைக்கவும். காய்கறிகளை வதக்கி மசாலா மற்றும் புளி கரைசல் சேர்த்து கொதிக்க விடவும்." 
+            }
+        };
+
+        // 2. Main Search Logic
+        async function getRecipes() {
+            const query = document.getElementById('userInput').value.toLowerCase().trim();
+            if (!query) return;
+
+            recipeGrid.innerHTML = "<p>Searching...</p>";
+
+            // Check if it's in our Tamil Database first
+            if (tamilRecipes[query]) {
+                displayTamilRecipe(tamilRecipes[query]);
+            } else {
+                // If not, fetch from Global API
+                try {
+                    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+                    const data = await res.json();
+                    displayGlobalRecipes(data.meals);
+                } catch (error) {
+                    recipeGrid.innerHTML = "<p>Error connecting to API!</p>";
+                }
+            }
+        }
+
+        // 3. Display Tamil Local Recipe
+        function displayTamilRecipe(meal) {
+            recipeGrid.innerHTML = `
+                <div class="recipe-card">
+                    <span class="tag">TAMIL SPECIAL</span>
+                    <img src="${meal.img}" alt="${meal.name}">
+                    <h3>${meal.name}</h3>
+                    <p><b>Category:</b> ${meal.category}</p>
+                    <p>${meal.instructions}</p>
+                </div>`;
+        }
+
+        // 4. Display Global API Recipes
+        function displayGlobalRecipes(meals) {
+            recipeGrid.innerHTML = "";
+            if (meals) {
+                meals.forEach(meal => {
+                    recipeGrid.innerHTML += `
+                        <div class="recipe-card">
+                            <span class="tag">GLOBAL API</span>
+                            <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+                            <h3>${meal.strMeal}</h3>
+                            <p><b>Category:</b> ${meal.strCategory}</p>
+                            <p>${meal.strInstructions.substring(0, 150)}...</p>
+                        </div>`;
+                });
+            } else {
+                recipeGrid.innerHTML = "<p>No recipes found. Try 'biryani' or 'chicken'.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
