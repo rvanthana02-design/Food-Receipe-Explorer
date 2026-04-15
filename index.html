@@ -1,0 +1,45 @@
+// 1. Namma Tamil Recipe Data (Example)
+const tamilRecipes = {
+    "biryani": {
+        name: "ஆம்பூர் சிக்கன் பிரியாணி",
+        category: "Non-Veg",
+        img: "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8",
+        instructions: "முதலில் அரிசியை ஊறவைக்கவும். பின் ஒரு பாத்திரத்தில் எண்ணெய் ஊற்றி பட்டை, கிராம்பு சேர்க்கவும்...",
+        yt: "https://youtube.com/results?search_query=biryani+recipe+tamil"
+    },
+    "sambar": {
+        name: "கல்யாண வீட்டு சாம்பார்",
+        category: "Veg",
+        img: "https://images.unsplash.com/photo-1601050690597-df056fb467ad",
+        instructions: "பருப்பை வேகவைக்கவும். காய்கறிகளை வதக்கி மசாலா சேர்த்து கொதிக்க விடவும்...",
+        yt: "https://youtube.com/results?search_query=sambar+recipe+tamil"
+    }
+};
+
+// 2. Search Logic Update
+async function getRecipes(query) {
+    const q = query.toLowerCase();
+    
+    // First, check if we have it in Tamil Data
+    if (tamilRecipes[q]) {
+        displayTamilRecipe(tamilRecipes[q]);
+    } else {
+        // If not in Tamil, fetch from Global API (English)
+        const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${q}`);
+        const data = await res.json();
+        displayRecipes(data.meals);
+    }
+}
+
+function displayTamilRecipe(meal) {
+    recipeGrid.innerHTML = `
+        <div class="recipe-card" onclick="showTamilDetails('${meal.name}')">
+            <img src="${meal.img}" alt="${meal.name}">
+            <div class="recipe-content">
+                <span class="recipe-category">${meal.category}</span>
+                <h3 class="recipe-title">${meal.name}</h3>
+                <button>View Recipe (தமிழ்)</button>
+            </div>
+        </div>
+    `;
+}
